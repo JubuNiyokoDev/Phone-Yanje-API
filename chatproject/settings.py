@@ -96,9 +96,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',  
         'NAME': 'Faculite$default',          
         'USER': 'Faculite',          
-        'PASSWORD': 'your_database_password',  
+        'PASSWORD': 'bujumbura',  
         'HOST': 'Faculite.mysql.pythonanywhere-services.com',          
-        'PORT': 'your_database_port',   
+        'PORT': '3306',   
         'OPTIONS':{
             'init_command':"SET aql_mode='STRICT_TRANS_TABLES'"
         }      
