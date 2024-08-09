@@ -2,5 +2,5 @@ Django
 djangorestframework
 folium
 phonenumbers
-guncorn
+gunicorn
 whitenoise
