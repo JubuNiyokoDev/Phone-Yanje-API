@@ -80,14 +80,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'chatproject.wsgi.application'
 
-# Database
+# # Database
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',  
+        'NAME': 'Faculite$default',          
+        'USER': 'Faculite',          
+        'PASSWORD': 'your_database_password',  
+        'HOST': 'Faculite.mysql.pythonanywhere-services.com',          
+        'PORT': 'your_database_port',   
+        'OPTIONS':{
+            'init_command':"SET aql_mode='STRICT_TRANS_TABLES'"
+        }      
     }
 }
-
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
