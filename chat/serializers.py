@@ -20,8 +20,10 @@ class UserCreationSerializer(serializers.ModelSerializer):
         )
         return user
 
+
 class LocationSerializer(serializers.Serializer):
     location = serializers.CharField()
-    service_provider = serializers.CharField()
-    latitude = serializers.FloatField()
-    longitude = serializers.FloatField()
+    service_provider = serializers.CharField(allow_blank=True, required=False)  # Accepte les chaînes vides ou nulles
+    latitude = serializers.FloatField(allow_null=True, required=False)  # Accepte les valeurs nulles
+    longitude = serializers.FloatField(allow_null=True, required=False)  # Accepte les valeurs nulles
+

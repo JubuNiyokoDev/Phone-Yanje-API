@@ -12,8 +12,14 @@ from phonenumbers import geocoder, carrier
 from opencage.geocoder import OpenCageGeocode
 import logging
 from urllib.parse import unquote
+from twilio.rest import Client
 
 logger = logging.getLogger(__name__)
+
+# Twilio credentials
+TWILIO_ACCOUNT_SID = 'ACed48c7be790ea82f5a62708dc615d349'
+TWILIO_AUTH_TOKEN = '146cc9765070143502ce38948a0af683'
+client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -43,16 +49,21 @@ class FindLocationAPIView(APIView):
         try:
             # Nettoyage du numéro de téléphone
             phone_number = unquote(phone_number)
-            phone_number = ''.join(filter(str.isdigit, phone_number))  # Garde seulement les chiffres
+            phone_number = ''.join(filter(lambda x: x.isdigit() or x == '+', phone_number))  # Garde les chiffres et le +
 
             # Ajouter le préfixe +257 pour le Burundi si absent
-            if not phone_number.startswith("257"):
-                phone_number = f"257{phone_number}"
+            if not phone_number.startswith("+257"):
+                phone_number = f"+257{phone_number}"
 
-            phone_number = f"+{phone_number}"
-            print(f"Processing phone number: {phone_number}")
-            parsed_number = phonenumbers.parse(phone_number, region="BI") 
+            logger.info(f"Processing phone number: {phone_number}")
 
+            # Vérifier la validité du numéro de téléphone avec Twilio
+            phone_info = client.lookups.v1.phone_numbers(phone_number).fetch(type=['carrier'])
+            if not phone_info:
+                logger.error(f"Invalid phone number: {phone_number}")
+                return Response({'error': 'Invalid phone number'}, status=status.HTTP_400_BAD_REQUEST)
+
+            parsed_number = phonenumbers.parse(phone_number)
             location_description = geocoder.description_for_number(parsed_number, 'fr')
             service_provider = carrier.name_for_number(parsed_number, 'fr')
 
@@ -64,12 +75,15 @@ class FindLocationAPIView(APIView):
             key = 'f808c7779f8948d18896a99cc53dd3cb'
             geocodeur = OpenCageGeocode(key)
             result = geocodeur.geocode(location_description)
+
             if not result:
-                logger.error("Geocoding result not found")
+                logger.error(f"Geocoding result not found for location: {location_description}")
                 return Response({'error': 'Location not found'}, status=status.HTTP_404_NOT_FOUND)
 
+            # Vérifier si les coordonnées sont uniques
             lat = result[0]['geometry']['lat']
             lng = result[0]['geometry']['lng']
+            logger.info(f"Geocoding result: Latitude: {lat}, Longitude: {lng}")
 
             # Serialize the response
             serializer = LocationSerializer(data={
