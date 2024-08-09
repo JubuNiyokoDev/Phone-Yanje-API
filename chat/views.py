@@ -39,7 +39,7 @@ class LoginUserView(generics.GenericAPIView):
         else:
             return Response({'message': 'Invalid credentials'}, status=401)
 
-class FindLocationAPIView(APIView):
+class FindLocationAPIByNumberView(APIView):
     def get(self, request, *args, **kwargs):
         phone_number = request.query_params.get('number')
         if not phone_number:
@@ -102,3 +102,15 @@ class FindLocationAPIView(APIView):
         except Exception as e:
             logger.error(f"Exception occurred: {e}")
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class FindLocationAPIByEMEIView(APIView):
+    def post(self, request, *args, **kwargs):
+        return Response({'message': 'Comming Soon'}, status=401)
+    def get(self, request, *args, **kwargs):
+        return Response({'message': 'Comming Soon'}, status=401)
+
+class FindLocationAPIByGoogleView(APIView):
+    def post(self, request, *args, **kwargs):
+        return Response({'message': 'Comming Soon'}, status=401)
+    def get(self, request, *args, **kwargs):
+        return Response({'message': 'Comming Soon'}, status=401)
